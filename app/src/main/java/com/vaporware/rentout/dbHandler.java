@@ -59,7 +59,7 @@ public class dbHandler extends SQLiteOpenHelper {
     }
     //And then there were CRUD functions.. Can I get that as a menu option?
 
-    public void addGear(listItem item) {
+    public void addGear(Gear item) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_ID, item.getId());
@@ -84,7 +84,7 @@ public class dbHandler extends SQLiteOpenHelper {
 
 
 
-    public listItem getItem(int id) { //consider expanding this until you understand it better.
+    public Gear getItem(int id) { //consider expanding this until you understand it better.
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_GEAR, new String[]{KEY_ID, KEY_TYPE, KEY_OWNER}, KEY_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
@@ -92,7 +92,7 @@ public class dbHandler extends SQLiteOpenHelper {
         if (cursor != null) {
             cursor.moveToFirst();
         }
-        listItem gear = new listItem(Integer.parseInt(cursor.getString(0)),cursor.getString(1)
+        Gear gear = new Gear(Integer.parseInt(cursor.getString(0)),cursor.getString(1)
             , cursor.getString(2));
         return gear;
     }
@@ -111,15 +111,15 @@ public class dbHandler extends SQLiteOpenHelper {
     }
 
 
-    public List<listItem> getAllItems() {
-        List<listItem> gearList = new ArrayList<listItem>();
+    public List<Gear> getAllItems() {
+        List<Gear> gearList = new ArrayList<Gear>();
         String getAllGearQuery = "SELECT * FROM " + TABLE_GEAR;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(getAllGearQuery, null);
         db.close();
         if (cursor.moveToFirst()) {
             do {
-                listItem gear = new listItem(Integer.parseInt(cursor.getString(0)),
+                Gear gear = new Gear(Integer.parseInt(cursor.getString(0)),
                         cursor.getString(1),cursor.getString(2));
                 gearList.add(gear);
             } while (cursor.moveToNext());
@@ -161,7 +161,7 @@ public class dbHandler extends SQLiteOpenHelper {
         return cursor.getCount();
     }
 
-    public int updateGear(listItem item) {
+    public int updateGear(Gear item) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(KEY_TYPE, item.getType());
@@ -181,7 +181,7 @@ public class dbHandler extends SQLiteOpenHelper {
                 new String[] {String.valueOf(owner.getId()) });
     }
 
-    public void deleteGear(listItem item) {
+    public void deleteGear(Gear item) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_GEAR, KEY_ID + " = ?",
                 new String[] {String.valueOf(item.getId()) });

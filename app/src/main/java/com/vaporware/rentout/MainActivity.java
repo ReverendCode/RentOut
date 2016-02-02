@@ -10,17 +10,22 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
-    private SQLiteAdapter myDbAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        //TODO: instatiate content provider to access gear/customer list
         //Probably a local SQLite instance
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        myDbAdapter = new SQLiteAdapter(this);
-        myDbAdapter.openToWrite();
+        dbHandler db = new dbHandler(this);
+
+        // TODO: 2/1/16 create list object
+
+        // TODO: 2/1/16 map gear to list objects, add to list on main activity
+
+        // TODO: 2/1/16 build gear modification fragment
+
+        // TODO: 2/1/16 build admin screen
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
