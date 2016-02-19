@@ -6,7 +6,7 @@ package com.vaporware.rentout;
 public class Gear {
     private int id;
     private String owner;
-    private String Type;
+    private String type;
     private String other;
 
     public Gear() {} //empty constructor
@@ -17,11 +17,11 @@ public class Gear {
     }
 
     public String getType() {
-        return Type;
+        return type;
     }
 
     public void setType(String type) {
-        Type = type;
+        this.type = type;
     }
 
     public int getId() {
