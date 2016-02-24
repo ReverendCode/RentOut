@@ -11,7 +11,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 public class AddGearActivity extends AppCompatActivity {
-//TODO: Complete this activity
+//TODO: Figure out a better data model for equipment
+    //Consider just picking a single store type (Ski shop)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
