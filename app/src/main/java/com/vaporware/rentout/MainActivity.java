@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        DbHandler db = new DbHandler(this);
+        dbHandler db = new dbHandler(this);
 
         mainListView = (ListView) findViewById(R.id.listView);
 //        Gear testItem = new Gear(1,"shop","");

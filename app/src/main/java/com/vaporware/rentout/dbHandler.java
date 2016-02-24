@@ -17,20 +17,18 @@ public class dbHandler extends SQLiteOpenHelper {
     //default names for admin owners
     //TODO: change this to reflect some kind of preferences
     public static final String SHOP = "shop";
-
-
     public static final String DATABASE_NAME = "gearDataBase";
     public static final int DATABASE_VERSION = 1;
     //gear table name
     public static final String TABLE_GEAR = "gear";
 
     //gear table columns
-    public static final String KEY_ID = "id";
+    public static final String KEY_ID = "_id"; //underscore because Android
     public static final String KEY_TYPE = "type";
     public static final String KEY_OWNER = "owner";
-
+    //owner table
     public static final String TABLE_OWNERS = "owners";
-
+    //owner table columns
     public static final String KEY_NAME = "name";
     public static final String KEY_PHONE = "phone";
     public static final String KEY_OTHER = "other"; //I don't know what else we need
@@ -92,9 +90,20 @@ public class dbHandler extends SQLiteOpenHelper {
         if (cursor != null) {
             cursor.moveToFirst();
         }
-        Gear gear = new Gear(Integer.parseInt(cursor.getString(0)),cursor.getString(1)
-            , cursor.getString(2));
-        return gear;
+        return new Gear(Integer.parseInt(cursor.getString(0)),cursor.getString(1)
+                , cursor.getString(2));
+    }
+    public boolean hasItem(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "SELECT * FROM " + TABLE_GEAR + " WHERE " + KEY_ID + " = " + id;
+        Cursor cursor = db.rawQuery(query, null);
+        db.close();
+        if (cursor == null) {
+            cursor.close();
+            return false;
+        }
+        cursor.close();
+        return true;
     }
 
     public Owner getOwner(int id) { //consider expanding this until you understand it better.
@@ -105,14 +114,14 @@ public class dbHandler extends SQLiteOpenHelper {
         if (cursor != null) {
             cursor.moveToFirst();
         }
-        Owner owner = new Owner(Integer.parseInt(cursor.getString(0)),cursor.getString(1),
+        return new Owner(Integer.parseInt(cursor.getString(0)),cursor.getString(1),
                 cursor.getString(2),cursor.getString(3));
-        return owner;
+
     }
 
 
     public List<Gear> getAllItems() {
-        List<Gear> gearList = new ArrayList<Gear>();
+        List<Gear> gearList = new ArrayList<>();
         String getAllGearQuery = "SELECT * FROM " + TABLE_GEAR;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(getAllGearQuery, null);
@@ -128,7 +137,7 @@ public class dbHandler extends SQLiteOpenHelper {
     }
 
     public List<Owner> getAllOwners() {
-        List<Owner> ownerList= new ArrayList<Owner>();
+        List<Owner> ownerList= new ArrayList<>();
         String getAllOwners = "SELECT * FROM " + TABLE_OWNERS;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(getAllOwners, null);
@@ -196,3 +205,4 @@ public class dbHandler extends SQLiteOpenHelper {
     }
 
 }
+

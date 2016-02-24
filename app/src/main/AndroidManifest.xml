@@ -27,6 +27,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.vaporware.rentout.MainActivity" />
         </activity>
+        <activity
+            android:name=".AddGearActivity"
+            android:label="@string/title_activity_add_gear"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.vaporware.rentout.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

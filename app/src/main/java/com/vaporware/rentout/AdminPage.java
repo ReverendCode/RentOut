@@ -22,8 +22,7 @@ public class AdminPage extends AppCompatActivity {
         addGearButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: this is where you inflate the new gear screen
-                Intent intent = new Intent(this,addGearActivity.class);
+                Intent intent = new Intent(getApplicationContext(), AddGearActivity.class);
                 startActivity(intent);
             }
         });
