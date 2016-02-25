@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class dbHandler extends SQLiteOpenHelper {
 
-    //default names for admin owners
+
     //TODO: change this to reflect some kind of preferences
     public static final String SHOP = "shop";
     public static final String DATABASE_NAME = "gearDataBase";
@@ -25,6 +25,9 @@ public class dbHandler extends SQLiteOpenHelper {
     //gear table columns
     public static final String KEY_ID = "_id"; //underscore because Android
     public static final String KEY_TYPE = "type";
+    public static final String KEY_SIZE = "size";
+    public static final String KEY_SERIAL = "serial";
+    public static final String KEY_STOCK_NUM = "stock";
     public static final String KEY_OWNER = "owner";
     //owner table
     public static final String TABLE_OWNERS = "owners";
@@ -40,8 +43,10 @@ public class dbHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_GEAR_TABLE = "CREATE TABLE " + TABLE_GEAR + "(" +
-                KEY_ID + "INTEGER PRIMARY KEY," + KEY_TYPE + " TEXT" +
-                KEY_OWNER + " TEXT)";
+                KEY_ID + "INTEGER PRIMARY KEY," + KEY_TYPE + " TEXT, " +
+                KEY_SIZE + " TEXT, " + KEY_SERIAL + " TEXT, " +
+                KEY_STOCK_NUM + " TEXT, " + KEY_OWNER +  " TEXT" + KEY_OTHER + " TEXT)";
+
         String CREATE_OWNER_TABLE = "CREATE TABLE " + TABLE_OWNERS + "(" +
                 KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT," +
                 KEY_PHONE + " TEXT," + KEY_OTHER + " TEXT" + ")";
@@ -84,14 +89,16 @@ public class dbHandler extends SQLiteOpenHelper {
 
     public Gear getItem(int id) { //consider expanding this until you understand it better.
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_GEAR, new String[]{KEY_ID, KEY_TYPE, KEY_OWNER}, KEY_ID + "=?",
+        Cursor cursor = db.query(TABLE_GEAR, new String[]{KEY_ID, KEY_TYPE, KEY_SIZE, KEY_SERIAL,
+                        KEY_STOCK_NUM, KEY_OWNER}, KEY_ID + "=?",
                 new String[]{String.valueOf(id)}, null, null, null, null);
         db.close();
         if (cursor != null) {
             cursor.moveToFirst();
         }
-        return new Gear(Integer.parseInt(cursor.getString(0)),cursor.getString(1)
-                , cursor.getString(2));
+        return new Gear(Integer.parseInt(cursor.getString(0)), cursor.getString(1)
+                , cursor.getString(2), cursor.getString(3), cursor.getString(4)
+                , cursor.getString(5), cursor.getString(6));
     }
     public boolean hasItem(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -128,8 +135,9 @@ public class dbHandler extends SQLiteOpenHelper {
         db.close();
         if (cursor.moveToFirst()) {
             do {
-                Gear gear = new Gear(Integer.parseInt(cursor.getString(0)),
-                        cursor.getString(1),cursor.getString(2));
+                Gear gear = new Gear(Integer.parseInt(cursor.getString(0)), cursor.getString(1)
+                        , cursor.getString(2), cursor.getString(3), cursor.getString(4)
+                        , cursor.getString(5), cursor.getString(6));
                 gearList.add(gear);
             } while (cursor.moveToNext());
         }
