@@ -7,14 +7,43 @@ public class Gear {
     private int id;
     private String owner;
     private String type;
+    private String size;
+    private String serial;
+    private String stockNum;
     private String other;
 
     public Gear() {} //empty constructor
-    public Gear(int id, String owner, String other) {
+    public Gear(int id, String type, String size, String serial,
+                String stockNum, String owner, String other) {
+        this.type = type;
+        this.size = size;
+        this.serial = serial;
+        this.stockNum = stockNum;
         this.id = id;
         this.owner = owner; //this may want to be a specific value for creation. E.G. "shop"
         this.other = other;
     }
+    public String getStockNum() {
+        return stockNum;
+    }
+    public String getSize() {
+        return size;
+    }
+
+    public String getSerial() {
+        return serial;
+    }
+
+    public void setSerial(String serial) {
+        this.serial = serial;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
+    public void setStockNum(String stockNum) {
+        this.stockNum = stockNum; }
 
     public String getType() {
         return type;

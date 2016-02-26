@@ -18,14 +18,14 @@
         android:id="@+id/addGearButton"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="62dp" />
+        android:layout_marginTop="50dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Remove Gear"
         android:id="@+id/removeGearButton"
-        android:layout_below="@+id/addGearButton"
+        android:layout_below="@id/addGearButton"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="51dp" />
 

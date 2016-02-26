@@ -1,0 +1,26 @@
+message Equipment {
+	required int32 _id = 1;
+
+	enum gearType {
+		SNOWBOARD = 1;
+		ALPINE_SKI = 2;
+		CROSS_COUNTRY_SKI = 3;
+		SNOWSHOES = 4;
+		BOOT_SNOWBOARD = 5;
+		BOOT_ALPINE_SKI = 6;
+		BOOT_CC_SKI = 7;
+		BOOT_SNOWSHOE = 8;
+		OTHER = 9;
+		//Next Value = 10
+	}
+
+	optional gearType type = 2;
+	optional int32 size = 3;
+	optional string serial = 4;
+	optional string stock_num = 5;
+
+	//NEXT NUMBER = 6
+}
+message equipment_list {
+	repeated Equipment item = 1;
+}

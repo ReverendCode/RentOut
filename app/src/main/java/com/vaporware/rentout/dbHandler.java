@@ -2,10 +2,15 @@ package com.vaporware.rentout;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.google.protobuf.ByteString;
+import com.google.protobuf.Message;
+
+import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,11 +29,8 @@ public class dbHandler extends SQLiteOpenHelper {
 
     //gear table columns
     public static final String KEY_ID = "_id"; //underscore because Android
-    public static final String KEY_TYPE = "type";
-    public static final String KEY_SIZE = "size";
-    public static final String KEY_SERIAL = "serial";
-    public static final String KEY_STOCK_NUM = "stock";
-    public static final String KEY_OWNER = "owner";
+    public static final String KEY_STOCK_NUM = "stockNum";
+    public static final String KEY_DATA = "data";
     //owner table
     public static final String TABLE_OWNERS = "owners";
     //owner table columns
@@ -43,9 +45,7 @@ public class dbHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_GEAR_TABLE = "CREATE TABLE " + TABLE_GEAR + "(" +
-                KEY_ID + "INTEGER PRIMARY KEY," + KEY_TYPE + " TEXT, " +
-                KEY_SIZE + " TEXT, " + KEY_SERIAL + " TEXT, " +
-                KEY_STOCK_NUM + " TEXT, " + KEY_OWNER +  " TEXT" + KEY_OTHER + " TEXT)";
+                KEY_ID + "INTEGER PRIMARY KEY," + KEY_STOCK_NUM + " TEXT," + KEY_DATA + " BLOB)";
 
         String CREATE_OWNER_TABLE = "CREATE TABLE " + TABLE_OWNERS + "(" +
                 KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT," +
@@ -62,15 +62,15 @@ public class dbHandler extends SQLiteOpenHelper {
     }
     //And then there were CRUD functions.. Can I get that as a menu option?
 
-    public void addGear(Gear item) {
+    public void addGear(EquipmentOuterClass.Equipment item) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_ID, item.getId());
-        values.put(KEY_TYPE, item.getType());
-        values.put(KEY_OWNER, SHOP);
+        Blob blob = (Blob) item.toByteString();
+        values.put(KEY_ID,item.getId());
+        values.put(KEY_STOCK_NUM, item.getStockNum());
+        values.put(KEY_DATA, String.valueOf(blob));
         db.insert(TABLE_GEAR, null, values);
         db.close();
-
     }
     public void addOwner(Owner owner) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -87,18 +87,17 @@ public class dbHandler extends SQLiteOpenHelper {
 
 
 
-    public Gear getItem(int id) { //consider expanding this until you understand it better.
+    public EquipmentOuterClass.Equipment getItem(int id) { //maybe that error check will work
+        if (!hasItem(id)) throw new Resources.NotFoundException("No Such Item");
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.query(TABLE_GEAR, new String[]{KEY_ID, KEY_TYPE, KEY_SIZE, KEY_SERIAL,
-                        KEY_STOCK_NUM, KEY_OWNER}, KEY_ID + "=?",
-                new String[]{String.valueOf(id)}, null, null, null, null);
+        EquipmentOuterClass.Equipment.Builder myItem = EquipmentOuterClass.Equipment.newBuilder();
+        String query = "SELECT * FROM " + TABLE_GEAR + " WHERE " + KEY_ID + " = " + id;
+
+        Cursor cursor = db.rawQuery(query,null);
         db.close();
-        if (cursor != null) {
-            cursor.moveToFirst();
-        }
-        return new Gear(Integer.parseInt(cursor.getString(0)), cursor.getString(1)
-                , cursor.getString(2), cursor.getString(3), cursor.getString(4)
-                , cursor.getString(5), cursor.getString(6));
+        myItem.mergeFrom((Message) ByteString.copyFromUtf8(cursor.getString(2)));
+        cursor.close();
+        return myItem.build();
     }
     public boolean hasItem(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -178,12 +177,13 @@ public class dbHandler extends SQLiteOpenHelper {
         return cursor.getCount();
     }
 
-    public int updateGear(Gear item) {
+    public int updateGear(EquipmentOuterClass.Equipment item) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_TYPE, item.getType());
-        values.put(KEY_OWNER, item.getOwner());
-        values.put(KEY_OTHER, item.getOther());
+        values.put(KEY_ID, item.getId());
+        values.put(KEY_STOCK_NUM, item.getStockNum());
+        values.put(KEY_DATA, String.valueOf(item.toByteString()));
+
         return db.update(TABLE_GEAR, values, KEY_ID + " = ?",
                 new String[]{String.valueOf(item.getId()) });
     }
