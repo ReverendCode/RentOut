@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="types">
+        <item>[Please Select]</item>
+        <item>Snowboard</item>
+        <item>Alpine Skis</item>
+        <item>Cross Country Skis</item>
+        <item>Snowshoes</item>
+        <item>Boots, Snowboard</item>
+        <item>Boots, Alpine Ski</item>
+        <item>Boots, Cross Country</item>
+        <item>Boots, Snowshoe</item>
+        <item>Other</item>
+    </string-array>
+</resources>

@@ -25,24 +25,25 @@
         android:layout_height="wrap_content"
         android:text="Remove Gear"
         android:id="@+id/removeGearButton"
-        android:layout_below="@id/addGearButton"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="51dp" />
+        android:layout_marginBottom="191dp"
+        android:layout_above="@+id/addUserButton"
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Add User"
         android:id="@+id/addUserButton"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_above="@+id/removeUserButton"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="102dp" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Remove User"
         android:id="@+id/removeUserButton"
-        android:layout_below="@+id/addUserButton"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="69dp" />
+        android:layout_alignParentBottom="true"
+        android:layout_alignStart="@+id/addUserButton"
+        android:layout_marginBottom="115dp" />
 </RelativeLayout>

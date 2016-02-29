@@ -6,9 +6,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -18,22 +18,17 @@ public class MainActivity extends AppCompatActivity {
     private ArrayAdapter<String> listAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         dbHandler db = new dbHandler(this);
+        //TODO: Don't forget to remove this!!!!
+        db.onUpgrade(db.getWritableDatabase(),1,1);
 
         mainListView = (ListView) findViewById(R.id.listView);
-//        Gear testItem = new Gear(1,"shop","");
-//        db.addGear(testItem); //populate db with dummy values
-
 
         // TODO: 2/1/16 map gear to list objects, add to list on main activity
 
         // TODO: 2/1/16 build gear modification fragment
-
-        // TODO: 2/1/16 build admin screen
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

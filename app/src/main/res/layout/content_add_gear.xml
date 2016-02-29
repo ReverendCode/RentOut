@@ -12,24 +12,36 @@
     tools:context="com.vaporware.rentout.AddGearActivity"
     tools:showIn="@layout/activity_add_gear">
 
+  <Spinner
+      android:entries="@array/types"
+      android:id="@+id/spinner_type"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"></Spinner>
+
     <EditText
+        android:id="@+id/edit_size"
+        android:hint="@string/hint_size"
+        android:layout_below="@id/spinner_type"
         android:layout_width="match_parent"
-        android:id="@+id/editGearId"
-        android:inputType="number"
-        android:hint="Enter id"
-        android:singleLine="true"
-        android:layout_height="50dp" />
+        android:layout_height="wrap_content" />
+  <EditText
+      android:layout_below="@id/edit_size"
+      android:id="@+id/edit_serial"
+      android:hint="@string/hint_serial"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content" />
     <EditText
-        android:layout_below="@id/editGearId"
+        android:id="@+id/edit_stock_num"
+        android:hint="@string/hint_stock_num"
+        android:layout_below="@id/edit_serial"
         android:layout_width="match_parent"
-        android:id="@+id/editGearType"
-        android:singleLine="true"
-        android:hint="Enter the gear type"
-        android:layout_height="50dp" />
+        android:layout_height="wrap_content" />
+
     <Button
-        android:layout_below="@id/editGearType"
+        android:layout_below="@id/edit_stock_num"
         android:text="Add Gear"
-        android:id="@+id/buttonNewGearToDb"
+        android:id="@+id/button_add_item"
+        android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

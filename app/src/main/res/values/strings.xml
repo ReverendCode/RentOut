@@ -4,4 +4,7 @@
     <string name="title_activity_admin_page">Admin Page</string>
     <string name="admin_title">Admin Page</string>
     <string name="title_activity_add_gear">AddGearActivity</string>
+    <string name="hint_serial">Serial #</string>
+    <string name="hint_stock_num">Stock #</string>
+    <string name="hint_size">Size</string>
 </resources>

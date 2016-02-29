@@ -10,7 +10,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Message;
 
-import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,11 +44,11 @@ public class dbHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_GEAR_TABLE = "CREATE TABLE " + TABLE_GEAR + "(" +
-                KEY_ID + "INTEGER PRIMARY KEY," + KEY_STOCK_NUM + " TEXT," + KEY_DATA + " BLOB)";
+                KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_STOCK_NUM + " TEXT," + KEY_DATA + " BLOB)";
 
         String CREATE_OWNER_TABLE = "CREATE TABLE " + TABLE_OWNERS + "(" +
-                KEY_ID + " INTEGER PRIMARY KEY," + KEY_NAME + " TEXT," +
-                KEY_PHONE + " TEXT," + KEY_OTHER + " TEXT" + ")";
+                KEY_ID + " INTEGER PRIMARY KEY, " + KEY_NAME + " TEXT, " +
+                KEY_PHONE + " TEXT, " + KEY_OTHER + " TEXT" + ")";
         db.execSQL(CREATE_GEAR_TABLE);
         db.execSQL(CREATE_OWNER_TABLE);
 
@@ -62,14 +61,17 @@ public class dbHandler extends SQLiteOpenHelper {
     }
     //And then there were CRUD functions.. Can I get that as a menu option?
 
+
     public void addGear(EquipmentOuterClass.Equipment item) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        Blob blob = (Blob) item.toByteString();
-        values.put(KEY_ID,item.getId());
+
         values.put(KEY_STOCK_NUM, item.getStockNum());
-        values.put(KEY_DATA, String.valueOf(blob));
         db.insert(TABLE_GEAR, null, values);
+        long id = db.insert(TABLE_GEAR, null, values);
+        EquipmentOuterClass.Equipment.Builder nBuilder = item.toBuilder();
+        nBuilder.setId((int)id);
+        updateGear(nBuilder.build());
         db.close();
     }
     public void addOwner(Owner owner) {
