@@ -36,6 +36,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.vaporware.rentout.MainActivity" />
         </activity>
+        <activity
+            android:name=".EquipmentList"
+            android:label="@string/title_activity_equipment_list"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.vaporware.rentout.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

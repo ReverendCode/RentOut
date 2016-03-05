@@ -36,7 +36,6 @@
         android:layout_below="@id/edit_serial"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
-
     <Button
         android:layout_below="@id/edit_stock_num"
         android:text="Add Gear"

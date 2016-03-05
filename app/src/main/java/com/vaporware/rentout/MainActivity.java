@@ -28,8 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
         // TODO: 2/1/16 map gear to list objects, add to list on main activity
 
-        // TODO: 2/1/16 build gear modification fragment
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 

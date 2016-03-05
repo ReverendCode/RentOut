@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import com.google.protobuf.ByteString;
+import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.Message;
 
 import java.util.ArrayList;
@@ -18,17 +19,14 @@ import java.util.List;
  */
 public class dbHandler extends SQLiteOpenHelper {
 
-
-    //TODO: change this to reflect some kind of preferences
-    public static final String SHOP = "shop";
     public static final String DATABASE_NAME = "gearDataBase";
     public static final int DATABASE_VERSION = 1;
     //gear table name
     public static final String TABLE_GEAR = "gear";
-
     //gear table columns
     public static final String KEY_ID = "_id"; //underscore because Android
     public static final String KEY_STOCK_NUM = "stockNum";
+    public static final String KEY_CURRENT_OWNER = "cur_owner";
     public static final String KEY_DATA = "data";
     //owner table
     public static final String TABLE_OWNERS = "owners";
@@ -44,11 +42,11 @@ public class dbHandler extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String CREATE_GEAR_TABLE = "CREATE TABLE " + TABLE_GEAR + "(" +
-                KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_STOCK_NUM + " TEXT," + KEY_DATA + " BLOB)";
+                KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_STOCK_NUM +
+                " TEXT," + KEY_DATA + " BLOB)";
 
-        String CREATE_OWNER_TABLE = "CREATE TABLE " + TABLE_OWNERS + "(" +
-                KEY_ID + " INTEGER PRIMARY KEY, " + KEY_NAME + " TEXT, " +
-                KEY_PHONE + " TEXT, " + KEY_OTHER + " TEXT" + ")";
+        String CREATE_OWNER_TABLE = "CREATE TABLE " + TABLE_OWNERS + " (" +
+                KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +  KEY_DATA + " BLOB" + ")";
         db.execSQL(CREATE_GEAR_TABLE);
         db.execSQL(CREATE_OWNER_TABLE);
 
@@ -65,29 +63,26 @@ public class dbHandler extends SQLiteOpenHelper {
     public void addGear(EquipmentOuterClass.Equipment item) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-
         values.put(KEY_STOCK_NUM, item.getStockNum());
         db.insert(TABLE_GEAR, null, values);
         long id = db.insert(TABLE_GEAR, null, values);
         EquipmentOuterClass.Equipment.Builder nBuilder = item.toBuilder();
         nBuilder.setId((int)id);
+        //this should keep the autoincremented _id and the .proto id the same
         updateGear(nBuilder.build());
         db.close();
     }
-    public void addOwner(Owner owner) {
+    public void addOwner(Owner.Customer owner) {
+        Owner.Customer.Builder builder = owner.toBuilder();
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_ID, owner.getId());
-        values.put(KEY_NAME, owner.getName());
-        values.put(KEY_PHONE, owner.getPhone());
-        values.put(KEY_OTHER, owner.getOther());
-        db.insert(TABLE_OWNERS, null, values);
+        values.putNull(KEY_DATA);
+        long id = db.insert(TABLE_OWNERS,null, values);
+        builder.setId((int) id);
+        updateOwner(builder.build());
+
         db.close();
-
     }
-
-
-
 
     public EquipmentOuterClass.Equipment getItem(int id) { //maybe that error check will work
         if (!hasItem(id)) throw new Resources.NotFoundException("No Such Item");
@@ -101,6 +96,7 @@ public class dbHandler extends SQLiteOpenHelper {
         cursor.close();
         return myItem.build();
     }
+
     public boolean hasItem(int id) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT * FROM " + TABLE_GEAR + " WHERE " + KEY_ID + " = " + id;
@@ -114,7 +110,7 @@ public class dbHandler extends SQLiteOpenHelper {
         return true;
     }
 
-    public Owner getOwner(int id) { //consider expanding this until you understand it better.
+    public Owner.Customer getOwner(int id) { //consider expanding this until you understand it better.
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.query(TABLE_OWNERS, new String[]{KEY_ID, KEY_NAME, KEY_PHONE, KEY_OTHER},
                 KEY_ID + "=?", new String[]{String.valueOf(id)}, null, null, null, null);
@@ -122,40 +118,52 @@ public class dbHandler extends SQLiteOpenHelper {
         if (cursor != null) {
             cursor.moveToFirst();
         }
-        return new Owner(Integer.parseInt(cursor.getString(0)),cursor.getString(1),
-                cursor.getString(2),cursor.getString(3));
-
+        Owner.Customer.Builder builder = Owner.Customer.newBuilder();
+        try {
+            builder.mergeFrom(ByteString.copyFromUtf8(cursor.getString(2)));
+        } catch (InvalidProtocolBufferException e) {
+            e.printStackTrace();
+        }
+        return builder.build();
     }
 
-
-    public List<Gear> getAllItems() {
-        List<Gear> gearList = new ArrayList<>();
+    public List<EquipmentOuterClass.Equipment> getAllItems() {
+        List<EquipmentOuterClass.Equipment> gearList = new ArrayList<>();
         String getAllGearQuery = "SELECT * FROM " + TABLE_GEAR;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(getAllGearQuery, null);
         db.close();
         if (cursor.moveToFirst()) {
+
             do {
-                Gear gear = new Gear(Integer.parseInt(cursor.getString(0)), cursor.getString(1)
-                        , cursor.getString(2), cursor.getString(3), cursor.getString(4)
-                        , cursor.getString(5), cursor.getString(6));
-                gearList.add(gear);
+                EquipmentOuterClass.Equipment.Builder builder = EquipmentOuterClass.Equipment.newBuilder();
+                try {
+                    builder.mergeFrom(ByteString.copyFromUtf8(cursor.getString(2)));
+                } catch (InvalidProtocolBufferException e) {
+                    e.printStackTrace();
+                }
+                gearList.add(builder.build());
+
             } while (cursor.moveToNext());
         }
         return gearList;
     }
 
-    public List<Owner> getAllOwners() {
-        List<Owner> ownerList= new ArrayList<>();
+    public List<Owner.Customer> getAllOwners() {
+        List<Owner.Customer> ownerList= new ArrayList<>();
         String getAllOwners = "SELECT * FROM " + TABLE_OWNERS;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor cursor = db.rawQuery(getAllOwners, null);
         db.close();
         if (cursor.moveToFirst()) {
             do {
-                Owner owner = new Owner(Integer.parseInt(cursor.getString(0)),cursor.getString(1),
-                        cursor.getString(2),cursor.getString(3));
-                ownerList.add(owner);
+                Owner.Customer.Builder builder = Owner.Customer.newBuilder();
+                try {
+                    builder.mergeFrom(ByteString.copyFromUtf8(cursor.getString(2)));
+                } catch (InvalidProtocolBufferException e) {
+                    e.printStackTrace();
+                }
+                ownerList.add(builder.build());
             } while (cursor.moveToNext());
         }
         return ownerList;
@@ -182,7 +190,6 @@ public class dbHandler extends SQLiteOpenHelper {
     public int updateGear(EquipmentOuterClass.Equipment item) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_ID, item.getId());
         values.put(KEY_STOCK_NUM, item.getStockNum());
         values.put(KEY_DATA, String.valueOf(item.toByteString()));
 
@@ -190,14 +197,13 @@ public class dbHandler extends SQLiteOpenHelper {
                 new String[]{String.valueOf(item.getId()) });
     }
 
-    public int updateOwner(Owner owner) {
+    public int updateOwner(Owner.Customer owner) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(KEY_NAME, owner.getName());
-        values.put(KEY_PHONE, owner.getPhone());
-        values.put(KEY_OTHER, owner.getOther());
-        return db.update(TABLE_OWNERS, values, KEY_ID + " = ?",
-                new String[] {String.valueOf(owner.getId()) });
+        values.put(KEY_DATA,String.valueOf(owner.toByteString()));
+
+        return db.update(TABLE_OWNERS,values,KEY_ID + " = ?",
+                new String[]{String.valueOf(owner.getId())});
     }
 
     public void deleteGear(Gear item) {
@@ -207,7 +213,7 @@ public class dbHandler extends SQLiteOpenHelper {
         db.close();
     }
 
-    public void deleteOwner(Owner owner) { //maybe check to not delete "shop"
+    public void deleteOwner(Owner.Customer owner) { //maybe check to not delete "shop"
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_OWNERS, KEY_ID + " = ?",
                 new String[] {String.valueOf(owner.getId()) });
